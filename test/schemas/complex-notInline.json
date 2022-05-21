@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "JSON API Schema",
+    "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
+    "type": "object",
+    "required": [
+        "errors"
+    ],
+    "properties": {
+        "errors": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "not": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "title": "not this",
+                        "description": "making life hard now",
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

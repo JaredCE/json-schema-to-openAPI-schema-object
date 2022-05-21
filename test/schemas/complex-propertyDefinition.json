@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "JSON API Schema",
+    "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
+    "type": "object",
+    "required": [
+        "errors"
+    ],
+    "properties": {
+        "errors": {
+            "$ref": "#/definitions/error"
+        }
+    },
+    "definitions": {
+        "error": {
+            "type": "object",
+            "properties": {
+                "meta": {
+                    "$ref": "#/definitions/meta"
+                }
+            }
+        },
+        "meta": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

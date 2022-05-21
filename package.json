@@ -1,0 +1,24 @@
+{
+  "name": "json-schema-openapi-json-schema",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --config './test/.mocharc.js'"
+  },
+  "author": "Jared Evans",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JaredCE/json-schema-to-openAPI-schema-object.git"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "oas-validator": "^5.0.8",
+    "sinon": "^14.0.0"
+  },
+  "dependencies": {
+    "json-schema-traverse": "^1.0.0"
+  }
+}
