@@ -77,8 +77,7 @@ To run:
 
 ```
 const jsonSchema = require('simple.json.schema')
-const Convertor = require('index')
+const ConvertorFactory = require('index')
 
-const complexConvertor = new Convertor(complexOneOfSchema)
-const components = complexConvertor.convert()
+const convertedSchema = ConvertorFactory.convert(jsonSchema)
 ```
