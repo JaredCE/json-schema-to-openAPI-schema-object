@@ -1,12 +1,15 @@
 {
   "name": "json-schema-openapi-json-schema",
   "version": "0.0.1",
-  "description": "",
+  "description": "Converts a regular JSON Schema to a compatible OpenAPI 3 Schema Object, extracting out $ref schemas to their own schema object",
+  "keywords": ["json", "json-schema", "openAPI", "openAPI-v3"],
   "main": "index.js",
   "scripts": {
     "test": "mocha --config './test/.mocharc.js'"
   },
-  "author": "Jared Evans",
+  "author": {
+    "name": "Jared Evans"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/JaredCE/json-schema-to-openAPI-schema-object.git"
