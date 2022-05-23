@@ -1,6 +1,7 @@
 'use strict'
 
-const traverse = require('json-schema-traverse');
+const traverse = require('json-schema-traverse')
+const {v4: uuid} = require('uuid')
 
 class Convertor {
     constructor(schema) {
@@ -78,24 +79,35 @@ class Convertor {
 
         traverse(this.schema, traversal)
 
-        if (Object.keys(this.components).includes('main') === false) {
-            // for (const [key, value] of Object.entries(this.referencedSchemas)) {
-            //     const path = value.split('/')
-            //     path.shift()
-            //     delete this.schema[path]
-            //     // const objPath = path.join('.')
-            //     // const newField = objPath.split('.').reduce((p,c)=>p&&p[c], this.schema)
-            //     // delete this.schema
-            // }
-            // console.log(this.schema)
-
-            delete this.schema.definitions
-            // if (this.schema.$schema) {
-            //     delete this.schema.$schema;
-            // }
-            Object.assign(this.components.schemas, {'main': this.schema})
+        for (const [key, value] of Object.entries(this.referencedSchemas)) {
+            const path = value.split('/').slice(1)
+            const pathKey = path.pop()
+            delete path.reduce((previous, current) => previous[current], this.schema)[pathKey]
         }
+
+        this.removeEmpty(this.schema)
+
+        if (Object.keys(this.components).includes('main') === false) {
+            Object.assign(this.components.schemas, {'main': this.schema})
+        } else {
+            Object.assign(this.components.schemas, {[`main-${uuid()}`]: this.schema})
+        }
+
         return this.components
+    }
+
+    removeEmpty(schema) {
+        Object.keys(schema).forEach(key => {
+            if (schema[key] 
+                && typeof schema[key] === 'object'
+                && this.removeEmpty(schema[key]) === null) {
+                delete schema[key]
+            }
+        })
+
+        if (Object.keys(schema).length === 0) {
+            return null
+        }
     }
 }
 

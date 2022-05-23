@@ -81,3 +81,37 @@ const ConvertorFactory = require('index')
 
 const convertedSchema = ConvertorFactory.convert(jsonSchema)
 ```
+
+If you already have a referenced schema named "main", it will append a uuid to "main" like thus:
+
+```
+{
+  schemas: {
+    main: {
+      "type": "string"
+    }
+    "main-547d55a5-87e9-444e-8783-e64f6863d20e": {
+      "title": "JSON API Schema",
+      "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
+      "type": "object",
+      "required": [
+          "errors"
+      ],
+      "properties": {
+          "errors": {
+              "type": "object",
+              "properties": {
+                  "message": {
+                      "allOf": [
+                          {
+                              "$ref": "#/components/schemas/main"
+                          }
+                      ]
+                  }
+              }
+          }
+      }
+    }
+  }
+}
+```
