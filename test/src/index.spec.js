@@ -7,7 +7,7 @@ const Factory = require('../../index')
 const simpleSchema = require('../schemas/simple-one')
 const complexAllOfSchema = require('../schemas/complex-allOf')
 
-describe('Factory', () => {
+describe('index', () => {
     beforeEach(function() {
         delete require.cache[require.resolve('../schemas/simple-one')];
         delete require.cache[require.resolve('../schemas/complex-allOf')];
