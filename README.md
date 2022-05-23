@@ -1,3 +1,6 @@
+![example workflow](https://github.com/JaredCE/json-schema-to-openAPI-schema-object/actions/workflows/node.js.yml/badge.svg)
+
+
 # json-schema-to-openAPI-schema-object
 
 Converts a standard JSON Schema to a compatible Open API v3 Schema Object
