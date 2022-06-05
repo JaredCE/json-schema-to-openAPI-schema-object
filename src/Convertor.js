@@ -87,6 +87,10 @@ class Convertor {
 
         this.removeEmpty(this.schema)
 
+        // force remove definitions
+        if (this.schema.definitions)
+            delete this.schema.definitions
+
         if (Object.keys(this.components).includes('main') === false) {
             Object.assign(this.components.schemas, {'main': this.schema})
         } else {
