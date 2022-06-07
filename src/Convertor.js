@@ -11,7 +11,7 @@ class Convertor {
         this.specialProperties = ['allOf', 'anyOf', 'items', 'oneOf', 'not', 'properties']
         this.ofProperties = ['allOf', 'anyOf', 'oneOf']
         this.referencedSchemas = {}
-        this.bannedKeyWords = ['$schema', '$comment', '$id', 'version']
+        this.bannedKeyWords = ['$schema', '$comment', '$id', 'version', 'examples']
 
         this.components = {
             schemas: {}
@@ -54,6 +54,15 @@ class Convertor {
             }
 
             bannedWordsRemoval()
+            
+            const convertNull = () => {
+                if (schema.type === 'null') {
+                    schema.nullable = true
+                    delete schema.type
+                }
+            }
+
+            convertNull()
 
             if (this.specialProperties.indexOf(parentKeyword) !== -1) {
                 if (this.ofProperties.indexOf(parentKeyword) !== -1) {
