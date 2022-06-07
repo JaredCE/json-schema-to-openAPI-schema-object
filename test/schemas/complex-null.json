@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$id": "http://example.com/build/complex-null.json",
+    "version": "1.1.1",
+    "title": "JSON API Schema",
+    "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
+    "type": "object",
+    "required": [
+        "errors"
+    ],
+    "properties": {
+        "errors": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/message"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "definitions": {
+        "message": {
+            "type": "string"
+        }
+    }
+}
