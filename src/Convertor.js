@@ -11,7 +11,7 @@ class Convertor {
         this.specialProperties = ['allOf', 'anyOf', 'items', 'oneOf', 'not', 'properties']
         this.ofProperties = ['allOf', 'anyOf', 'oneOf']
         this.referencedSchemas = {}
-        this.bannedKeyWords = ['$schema', '$comment', '$id']
+        this.bannedKeyWords = ['$schema', '$comment', '$id', 'version']
 
         this.components = {
             schemas: {}
