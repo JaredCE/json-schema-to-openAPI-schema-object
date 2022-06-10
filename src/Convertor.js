@@ -69,6 +69,11 @@ class Convertor {
                             obj.nullable = true
                         } else {
                             obj.type = type
+                            if (schema?.default) {
+                                obj.default = schema.default
+                                delete schema.default
+                            }
+
                             for (const property of Object.keys(schema)) {
                                 if (type === 'array' && property === 'items') {
                                     obj.items = schema[property]
@@ -110,7 +115,7 @@ class Convertor {
                 }
 
                 if (schema.type === 'string') {
-                    if (Object.keys(schema).indexOf('default')) {
+                    if (Object.keys(schema).indexOf('default') !== -1) {
                         schema.default = `${schema.default}`
                     }
                 }
