@@ -377,7 +377,7 @@ describe('Convertor', () => {
 
     describe('convert a schema with null types', () => {
         it('should return a schema valid for OpenAPI v3.0.0', async function() {
-            const complexConvertor = new Convertor(complexTypeArraySchema)
+            const complexConvertor = new Convertor(complexNullTypeSchema)
             const components = complexConvertor.convert()
             const cloned = JSON.parse(JSON.stringify(simpleOpenAPI))
             let valid = await validator.validateInner(cloned, {})
@@ -397,8 +397,9 @@ describe('Convertor', () => {
 
     describe('convert a schema with types that are an array', () => {
         it('should return a schema valid for OpenAPI v3.0.0', async function() {
-            const complexConvertor = new Convertor(complexNullTypeSchema)
+            const complexConvertor = new Convertor(complexTypeArraySchema)
             const components = complexConvertor.convert()
+
             const cloned = JSON.parse(JSON.stringify(simpleOpenAPI))
             let valid = await validator.validateInner(cloned, {})
             expect(valid).to.be.true
@@ -417,6 +418,7 @@ describe('Convertor', () => {
 
     describe('use a repo with lots of schemas to find failing ones', () => {
         xit('should convert all schemas successfully', async function() {
+            this.timeout(5000);
             const bannedSchemas = []
 
             const url = `https://api.github.com/repos/SchemaStore/schemastore/contents/src/schemas/json`;
