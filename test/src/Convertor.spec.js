@@ -2,6 +2,7 @@
 
 const expect = require('chai').expect
 const validator = require('oas-validator');
+const fetch = require('node-fetch')
 
 const Convertor = require('../../src/Convertor')
 
@@ -371,7 +372,7 @@ describe('Convertor', () => {
             expect(valid).to.be.true
         });
     });
-    
+
     describe('convert a schema with null types', () => {
         it('should return a schema valid for OpenAPI v3.0.0', async function() {
             const complexConvertor = new Convertor(complexNullTypeSchema)
@@ -391,4 +392,40 @@ describe('Convertor', () => {
             expect(valid).to.be.true
         });
     });
+
+    describe('use a repo with lots of schemas to find failing ones', () => {
+        it('should convert all schemas successfully', async function() {
+            const bannedSchemas = []
+
+            const url = `https://api.github.com/repos/SchemaStore/schemastore/contents/src/schemas/json`;
+            const list = await fetch(url).then(res => res.json());
+            const rawURLs = list.map(item => {
+                return item.download_url
+            })
+
+            for (const rawUrl of rawURLs) {
+                console.log(rawUrl)
+                if (bannedSchemas.includes(rawUrl) === false) {
+                    const data =  await fetch(rawUrl).then(res => res.json())
+                        .catch(err => {
+                            console.log(err)
+                            throw err;
+                        })
+
+                    const convertor = new Convertor(data)
+                    const components = convertor.convert()
+                    const cloned = JSON.parse(JSON.stringify(simpleOpenAPI))
+                    let valid = await validator.validateInner(cloned, {})
+                    expect(valid).to.be.true
+                    Object.assign(cloned, {components})
+                    valid = await validator.validateInner(cloned, {})
+                        .catch(err => {
+                            console.log(err)
+                            throw err;
+                        })
+                    expect(valid).to.be.true
+                }
+            }
+        })
+    })
 });
