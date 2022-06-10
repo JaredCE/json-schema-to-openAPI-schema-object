@@ -69,6 +69,17 @@ class Convertor {
                             obj.nullable = true
                         } else {
                             obj.type = type
+                            for (const property of Object.keys(schema)) {
+                                if (type === 'array' && property === 'items') {
+                                    obj.items = schema[property]
+                                    delete schema.items
+                                }
+
+                                if (type === 'object' && property === 'properties') {
+                                    obj.properties = schema[property]
+                                    delete schema.properties
+                                }
+                            }
                         }
 
                         oneOf.push(obj)
