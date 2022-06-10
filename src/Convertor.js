@@ -53,8 +53,6 @@ class Convertor {
                 }
             }
 
-            bannedWordsRemoval()
-
             const convertNull = () => {
                 if (schema.type === 'null') {
                     schema.nullable = true
@@ -62,7 +60,27 @@ class Convertor {
                 }
             }
 
+            const convertTypeArrays = () => {
+                if (Array.isArray(schema.type)) {
+                    const oneOf = []
+                    for (const type of schema.type) {
+                        const obj = {}
+                        if (type === 'null') {
+                            obj.nullable = true
+                        } else {
+                            obj.type = type
+                        }
+
+                        oneOf.push(obj)
+                    }
+                    schema.oneOf = oneOf
+                    delete schema.type
+                }
+            }
+
             convertNull()
+            convertTypeArrays()
+            bannedWordsRemoval()
 
             if (this.specialProperties.indexOf(parentKeyword) !== -1) {
                 if (this.ofProperties.indexOf(parentKeyword) !== -1) {
