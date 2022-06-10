@@ -89,9 +89,37 @@ class Convertor {
                 }
             }
 
+            const convertDefaultValues = () => {
+                if (schema.type === 'boolean') {
+                    if (schema.default === 'true' || schema.default === 'false') {
+                        if (schema.default === 'true')
+                            schema.default = true
+                        else
+                            schema.default = false
+                    }
+                }
+
+                if (schema.type === 'number' || schema.type === 'integer') {
+                    if (typeof schema.default === 'string') {
+                        schema.default = parseInt(schema.default, 10)
+                    }
+                }
+
+                if (schema.type === 'array' && schema.items === undefined) {
+                    schema.items = {nullable: true}
+                }
+
+                if (schema.type === 'string') {
+                    if (Object.keys(schema).indexOf('default')) {
+                        schema.default = `${schema.default}`
+                    }
+                }
+            }
+
             convertNull()
             convertTypeArrays()
             bannedWordsRemoval()
+            convertDefaultValues()
 
             if (this.specialProperties.indexOf(parentKeyword) !== -1) {
                 if (this.ofProperties.indexOf(parentKeyword) !== -1) {

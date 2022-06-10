@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "JSON API Schema",
+    "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
+    "type": "object",
+    "required": [
+        "errors"
+    ],
+    "properties": {
+        "errors": {
+            "type": "object"
+        },
+        "Price": {
+            "type": "number",
+            "default": "100"
+        },
+        "VAT": {
+            "type": "integer",
+            "default": "20"
+        },
+        "hasPrice": {
+            "type": "boolean",
+            "default": "true"
+        },
+        "things": {
+            "type": "array"
+        }
+    }
+}
