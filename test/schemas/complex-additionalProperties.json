@@ -1,0 +1,128 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "JSON API Schema",
+    "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
+    "type": "object",
+    "required": [
+        "errors"
+    ],
+    "properties": {
+        "errors": {
+            "type": "object"
+        },
+        "Logging": {
+            "$ref": "#/definitions/logging"
+        }
+    },
+    "definitions": {
+        "logLevel": {
+            "description": "Log level configurations used when creating logs. Only logs that exceeds its matching log level will be enabled. Each log level configuration has a category specified by its JSON property name. For more information about configuring log levels, see https://docs.microsoft.com/aspnet/core/fundamentals/logging/#configure-logging.",
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/logLevelThreshold"
+            }
+        },
+        "logLevelThreshold": {
+            "description": "Log level threshold.",
+            "type": "string",
+            "enum": [
+              "Trace",
+              "Debug",
+              "Information",
+              "Warning",
+              "Error",
+              "Critical",
+              "None"
+            ]
+        },
+        "logging": {
+            "type": "object",
+            "description": "Configuration for Microsoft.Extensions.Logging.",
+            "properties": {
+              "LogLevel": {
+                "$ref": "#/definitions/logLevel"
+              },
+              "Console": {
+                "properties": {
+                  "LogLevel": {
+                    "$ref": "#/definitions/logLevel"
+                  },
+                  "FormatterName": {
+                    "description": "Name of the log message formatter to use. Defaults to 'simple'.",
+                    "type": "string",
+                    "default": "simple"
+                  },
+                  "FormatterOptions": {
+                    "description": "Log message formatter options. Additional properties are available on the options depending on the configured formatter. The formatter is specified by FormatterName.",
+                    "type": "object",
+                    "properties": {
+                      "IncludeScopes": {
+                        "description": "Include scopes when true. Defaults to false.",
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "TimestampFormat": {
+                        "description": "Format string used to format timestamp in logging messages. Defaults to null.",
+                        "type": "string"
+                      },
+                      "UseUtcTimestamp": {
+                        "description": "Indication whether or not UTC timezone should be used to for timestamps in logging messages. Defaults to false.",
+                        "type": "boolean",
+                        "default": false
+                      }
+                    }
+                  },
+                  "LogToStandardErrorThreshold": {
+                    "description": "The minimum level of messages are written to Console.Error.",
+                    "$ref": "#/definitions/logLevelThreshold"
+                  }
+                }
+              },
+              "EventSource": {
+                "properties": {
+                  "LogLevel": {
+                    "$ref": "#/definitions/logLevel"
+                  }
+                }
+              },
+              "Debug": {
+                "properties": {
+                  "LogLevel": {
+                    "$ref": "#/definitions/logLevel"
+                  }
+                }
+              },
+              "EventLog": {
+                "properties": {
+                  "LogLevel": {
+                    "$ref": "#/definitions/logLevel"
+                  }
+                }
+              },
+              "ElmahIo": {
+                "properties": {
+                  "LogLevel": {
+                    "$ref": "#/definitions/logLevel"
+                  }
+                }
+              },
+              "ElmahIoBreadcrumbs": {
+                "properties": {
+                  "LogLevel": {
+                    "$ref": "#/definitions/logLevel"
+                  }
+                }
+              }
+            },
+            "additionalProperties": {
+              "type": "object",
+              "description": "Logging configuration for a provider. The provider name must match the configuration's JSON property property name.",
+              "properties": {
+                "LogLevel": {
+                  "$ref": "#/definitions/logLevel"
+                }
+              }
+            }
+        }
+    }
+}
