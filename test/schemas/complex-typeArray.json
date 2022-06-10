@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "JSON API Schema",
+    "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
+    "type": "object",
+    "required": [
+        "errors"
+    ],
+    "properties": {
+        "errors": {
+            "type": ["string", "null"],
+            "description": "this is an errors object",
+            "example": "Error occured here"
+        },
+        "error": {
+            "type": ["object", "null"],
+            "properties": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "otherThing": {
+            "type": ["null", "array"],
+            "items": {
+                "type":"string"
+            }
+        },
+        "moreThing": {
+            "type": ["null", "object"],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
