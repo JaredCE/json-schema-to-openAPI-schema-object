@@ -8,7 +8,20 @@
     ],
     "properties": {
         "errors": {
-            "type": ["string", "null"]
+            "type": ["string", "null"],
+            "description": "this is an errors object",
+            "example": "Error occured here"
+        },
+        "error": {
+            "type": ["object", "null"],
+            "properties": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
         }
     }
 }
