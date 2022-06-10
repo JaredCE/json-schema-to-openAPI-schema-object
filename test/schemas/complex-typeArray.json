@@ -44,6 +44,20 @@
         },
         "otherBooleanThing": {
             "type": "boolean"
+        },
+        "mode": {
+            "anyOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "string",
+                    "enum": ["header", "parameter", "cookie"],
+                    "default": "header"
+                }
+            ],
+            "description": "From which part of the request the token should be extracted. Possible values are 'header', 'parameter', 'cookie'.",
+            "default": "header"
         }
     }
 }
