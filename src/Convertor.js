@@ -121,10 +121,28 @@ class Convertor {
                 }
             }
 
+            const defaultValuesForOfProperties = () => {
+                if (schema.type === undefined && this.ofProperties.some(element => Object.keys(schema).includes(element))) {
+                    if (Object.keys(schema).includes('default')) {
+                        for (const property of this.ofProperties) {
+                            if (Object.keys(schema).includes(property)) {
+                                for (const ofProperty of schema[property]) {
+                                    if (ofProperty.type !== 'null' || ofProperty.nullable) {
+                                        ofProperty.default = schema.default
+                                        delete schema.default
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             convertNull()
             convertTypeArrays()
             bannedWordsRemoval()
             convertDefaultValues()
+            defaultValuesForOfProperties()
 
             if (this.specialProperties.indexOf(parentKeyword) !== -1) {
                 if (this.ofProperties.indexOf(parentKeyword) !== -1) {
