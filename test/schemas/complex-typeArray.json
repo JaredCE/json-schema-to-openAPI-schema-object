@@ -22,6 +22,20 @@
                     }
                 }
             }
+        },
+        "otherThing": {
+            "type": ["null", "array"],
+            "items": {
+                "type":"string"
+            }
+        },
+        "moreThing": {
+            "type": ["null", "object"],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
         }
     }
 }
