@@ -10,7 +10,8 @@
         "errors": {
             "type": ["string", "null"],
             "description": "this is an errors object",
-            "example": "Error occured here"
+            "example": "Error occured here",
+            "default": "hello world"
         },
         "error": {
             "type": ["object", "null"],
@@ -36,6 +37,13 @@
                     "type": "string"
                 }
             }
+        },
+        "booleanThing": {
+            "type": ["null", "boolean"],
+            "default": "false"
+        },
+        "otherBooleanThing": {
+            "type": "boolean"
         }
     }
 }
