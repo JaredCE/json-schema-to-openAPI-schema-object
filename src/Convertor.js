@@ -93,6 +93,16 @@ class Convertor {
                 }
             }
 
+            const convertItemArrays = () => {
+                if (Array.isArray(schema.items)) {
+                    const obj = {}
+                    for (const item of schema.items) {
+                        Object.assign(obj, item)
+                    }
+                    schema.items = obj
+                }
+            }
+
             const convertDefaultValues = () => {
                 if (schema.type === 'boolean') {
                     if (schema.default === 'true' || schema.default === 'false') {
@@ -139,6 +149,7 @@ class Convertor {
 
             convertNull()
             convertTypeArrays()
+            convertItemArrays()
             bannedWordsRemoval()
             convertDefaultValues()
             defaultValuesForOfProperties()
