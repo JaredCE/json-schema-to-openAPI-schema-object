@@ -46,6 +46,7 @@ describe('Convertor', () => {
         delete require.cache[require.resolve('../schemas/complex-typeArray')];
         delete require.cache[require.resolve('../schemas/complex-defaultValues')];
         delete require.cache[require.resolve('../schemas/complex-additionalProperties')];
+        delete require.cache[require.resolve('../schemas/complex-itemsAsArray')];
         convertor = new Convertor(simpleSchema)
     });
 
