@@ -115,7 +115,7 @@ class Convertor {
 
                 if (schema.type === 'number' || schema.type === 'integer') {
                     if (typeof schema.default === 'string') {
-                        schema.default = parseInt(schema.default, 10)
+                        schema.default = parseInt(schema.default, 10) || 1
                     }
                 }
 
