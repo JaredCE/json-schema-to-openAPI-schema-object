@@ -68,7 +68,7 @@ class Convertor {
                             obj.nullable = true
                         } else {
                             obj.type = type
-                            if (schema?.default) {
+                            if (schema.default) {
                                 obj.default = schema.default
                                 delete schema.default
                             }
