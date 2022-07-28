@@ -7,11 +7,10 @@ class Convertor {
     constructor(schema) {
         this.schema = JSON.parse(JSON.stringify(schema))
 
-        // this.specialProperties = ['allOf', 'oneOf', 'anyOf', 'not', 'items', 'properties', 'additionalProperties']
-        this.specialProperties = ['allOf', 'anyOf', 'items', 'oneOf', 'not', 'properties']
+        this.specialProperties = ['allOf', 'anyOf', 'items', 'oneOf', 'not', 'properties', 'additionalProperties']
         this.ofProperties = ['allOf', 'anyOf', 'oneOf']
         this.referencedSchemas = {}
-        this.bannedKeyWords = ['$schema', '$comment', '$id', 'version', 'examples']
+        this.bannedKeyWords = ['$schema', '$comment', '$id', 'version', 'examples', 'id']
 
         this.components = {
             schemas: {}
@@ -53,8 +52,6 @@ class Convertor {
                 }
             }
 
-            bannedWordsRemoval()
-            
             const convertNull = () => {
                 if (schema.type === 'null') {
                     schema.nullable = true
@@ -62,7 +59,100 @@ class Convertor {
                 }
             }
 
+            const convertTypeArrays = () => {
+                if (Array.isArray(schema.type)) {
+                    const oneOf = []
+                    for (const type of schema.type) {
+                        const obj = {}
+                        if (type === 'null') {
+                            obj.nullable = true
+                        } else {
+                            obj.type = type
+                            if (schema.default) {
+                                obj.default = schema.default
+                                delete schema.default
+                            }
+
+                            for (const property of Object.keys(schema)) {
+                                if (type === 'array' && property === 'items') {
+                                    obj.items = schema[property]
+                                    delete schema.items
+                                }
+
+                                if (type === 'object' && property === 'properties') {
+                                    obj.properties = schema[property]
+                                    delete schema.properties
+                                }
+                            }
+                        }
+
+                        oneOf.push(obj)
+                    }
+                    schema.oneOf = oneOf
+                    delete schema.type
+                }
+            }
+
+            const convertItemArrays = () => {
+                if (Array.isArray(schema.items)) {
+                    const obj = {}
+                    for (const item of schema.items) {
+                        Object.assign(obj, item)
+                    }
+                    schema.items = obj
+                }
+            }
+
+            const convertDefaultValues = () => {
+                if (schema.type === 'boolean') {
+                    if (schema.default === 'true' || schema.default === 'false') {
+                        if (schema.default === 'true')
+                            schema.default = true
+                        else
+                            schema.default = false
+                    }
+                }
+
+                if (schema.type === 'number' || schema.type === 'integer') {
+                    if (typeof schema.default === 'string') {
+                        schema.default = parseInt(schema.default, 10) || 1
+                    }
+                }
+
+                if (schema.type === 'array' && schema.items === undefined) {
+                    schema.items = {nullable: true}
+                }
+
+                if (schema.type === 'string') {
+                    if (Object.keys(schema).indexOf('default') !== -1) {
+                        schema.default = `${schema.default}`
+                    }
+                }
+            }
+
+            const defaultValuesForOfProperties = () => {
+                if (schema.type === undefined && this.ofProperties.some(element => Object.keys(schema).includes(element))) {
+                    if (Object.keys(schema).includes('default')) {
+                        for (const property of this.ofProperties) {
+                            if (Object.keys(schema).includes(property)) {
+                                for (const ofProperty of schema[property]) {
+                                    if (ofProperty.type !== 'null' || ofProperty.nullable) {
+                                        ofProperty.default = schema.default
+                                        delete schema.default
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             convertNull()
+            convertTypeArrays()
+            convertItemArrays()
+            bannedWordsRemoval()
+            convertDefaultValues()
+            defaultValuesForOfProperties()
 
             if (this.specialProperties.indexOf(parentKeyword) !== -1) {
                 if (this.ofProperties.indexOf(parentKeyword) !== -1) {
@@ -111,7 +201,7 @@ class Convertor {
 
     removeEmpty(schema) {
         Object.keys(schema).forEach(key => {
-            if (schema[key] 
+            if (schema[key]
                 && typeof schema[key] === 'object'
                 && this.removeEmpty(schema[key]) === null) {
                 delete schema[key]

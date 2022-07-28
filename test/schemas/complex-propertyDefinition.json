@@ -26,6 +26,13 @@
                     "type": "string"
                 }
             }
+        },
+        "dataType": {
+            "oneOf": [
+                {
+                  "$ref": "#/definitions/meta"
+                }
+            ]
         }
     }
 }
