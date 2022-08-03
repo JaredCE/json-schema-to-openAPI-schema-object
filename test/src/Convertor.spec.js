@@ -24,6 +24,7 @@ const complexTypeArraySchema = require('../schemas/complex-typeArray')
 const complexDefaultValuesSchema = require('../schemas/complex-defaultValues')
 const complexAdditionalPropertiesSchema = require('../schemas/complex-additionalProperties')
 const complexItemsAsArraySchema = require('../schemas/complex-itemsAsArray')
+const complexEmbeddedDefinitionsSchema = require('../schemas/complex-embeddedDefinitions')
 
 const simpleOpenAPI = require('../openAPI/simple')
 
@@ -47,6 +48,7 @@ describe('Convertor', () => {
         delete require.cache[require.resolve('../schemas/complex-defaultValues')];
         delete require.cache[require.resolve('../schemas/complex-additionalProperties')];
         delete require.cache[require.resolve('../schemas/complex-itemsAsArray')];
+        delete require.cache[require.resolve('../schemas/complex-embeddedDefinitions')];
         convertor = new Convertor(simpleSchema)
     });
 
@@ -353,6 +355,27 @@ describe('Convertor', () => {
             expect(cloned.components.schemas).to.have.property('links')
             expect(cloned.components.schemas).to.have.property('link')
             expect(cloned.components.schemas).to.have.property('error')
+            valid = await validator.validateInner(cloned, {})
+                .catch(err => {
+                    console.log(err)
+                })
+            expect(valid).to.be.true
+        });
+
+        it('should return a schema valid for OpenAPI v3.0.0 when definitions are deeply embedded', async function() {
+            const complexConvertor = new Convertor(complexEmbeddedDefinitionsSchema)
+            const components = complexConvertor.convert()
+            const cloned = JSON.parse(JSON.stringify(simpleOpenAPI))
+            let valid = await validator.validateInner(cloned, {})
+            expect(valid).to.be.true
+            Object.assign(cloned, {components})
+            expect(cloned).to.have.property('components')
+            expect(cloned.components).to.have.property('schemas')
+            expect(cloned.components.schemas).to.have.property('main')
+            expect(cloned.components.schemas.main.properties).to.have.property('contact')
+            expect(cloned.components.schemas.main.properties.contact).to.not.have.property('definitions')
+            expect(cloned.components.schemas.main.properties).to.have.property('clientId')
+            expect(cloned.components.schemas.main.properties).to.have.property('credentials')
             valid = await validator.validateInner(cloned, {})
                 .catch(err => {
                     console.log(err)
