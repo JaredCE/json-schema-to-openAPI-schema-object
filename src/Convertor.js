@@ -147,7 +147,16 @@ class Convertor {
                 }
             }
 
+            const convertConst = () => {
+                if (schema.const) {
+                    const enumProperty = [schema.const]
+                    schema.enum = enumProperty
+                    delete schema.const
+                }
+            }
+
             convertNull()
+            convertConst()
             convertTypeArrays()
             convertItemArrays()
             bannedWordsRemoval()
