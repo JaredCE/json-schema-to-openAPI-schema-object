@@ -6,25 +6,26 @@ const fetch = require('node-fetch')
 
 const Convertor = require('../../src/Convertor')
 
-const simpleSchema = require('../schemas/simple-one')
-const complexSchema = require('../schemas/complex-one')
-const complexAllOfSchema = require('../schemas/complex-allOf')
-const complexAnyOfSchema = require('../schemas/complex-anyOf')
-const complexAnyOfInlineSchema = require('../schemas/complex-anyOfInline')
-const complexItemsSchema = require('../schemas/complex-items')
-const complexNotSchema = require('../schemas/complex-not')
-const complexNotInlineSchema = require('../schemas/complex-notInline')
-const complexOneOfSchema = require('../schemas/complex-oneOf')
-const moreComplexOneOfSchema = require('../schemas/morecomplex-oneOf')
-const complexPropertySchema = require('../schemas/complex-property')
-const complexPropertyDefinitionSchema = require('../schemas/complex-propertyDefinition')
-const complexResolvedDefinitionSchema = require('../schemas/complex-resolvedDefinition')
-const complexNullTypeSchema = require('../schemas/complex-null')
-const complexTypeArraySchema = require('../schemas/complex-typeArray')
-const complexDefaultValuesSchema = require('../schemas/complex-defaultValues')
-const complexAdditionalPropertiesSchema = require('../schemas/complex-additionalProperties')
-const complexItemsAsArraySchema = require('../schemas/complex-itemsAsArray')
-const complexEmbeddedDefinitionsSchema = require('../schemas/complex-embeddedDefinitions')
+const simpleSchema = require('../schemas/simple-one.json')
+const complexSchema = require('../schemas/complex-one.json')
+const complexAllOfSchema = require('../schemas/complex-allOf.json')
+const complexAnyOfSchema = require('../schemas/complex-anyOf.json')
+const complexAnyOfInlineSchema = require('../schemas/complex-anyOfInline.json')
+const complexItemsSchema = require('../schemas/complex-items.json')
+const complexNotSchema = require('../schemas/complex-not.json')
+const complexNotInlineSchema = require('../schemas/complex-notInline.json')
+const complexOneOfSchema = require('../schemas/complex-oneOf.json')
+const moreComplexOneOfSchema = require('../schemas/morecomplex-oneOf.json')
+const complexPropertySchema = require('../schemas/complex-property.json')
+const complexPropertyDefinitionSchema = require('../schemas/complex-propertyDefinition.json')
+const complexResolvedDefinitionSchema = require('../schemas/complex-resolvedDefinition.json')
+const complexNullTypeSchema = require('../schemas/complex-null.json')
+const complexTypeArraySchema = require('../schemas/complex-typeArray.json')
+const complexDefaultValuesSchema = require('../schemas/complex-defaultValues.json')
+const complexAdditionalPropertiesSchema = require('../schemas/complex-additionalProperties.json')
+const complexItemsAsArraySchema = require('../schemas/complex-itemsAsArray.json')
+const complexEmbeddedDefinitionsSchema = require('../schemas/complex-embeddedDefinitions.json')
+const complexConstSchema = require('../schemas/complex-constProperty.json')
 
 const simpleOpenAPI = require('../openAPI/simple')
 
@@ -502,6 +503,30 @@ describe('Convertor', () => {
             expect(cloned.components).to.have.property('schemas')
             expect(cloned.components.schemas).to.have.property('main')
             expect(cloned.components.schemas.main).to.not.have.property('definitions')
+            valid = await validator.validateInner(cloned, {})
+                .catch(err => {
+                    console.log(err)
+                })
+            expect(valid).to.be.true
+        });
+    });
+
+    describe('convert a schema with a property containing a const', () => {
+        it('should return a schema valid for OpenAPI v3.0.0', async function() {
+            const complexConvertor = new Convertor(complexConstSchema)
+            const components = complexConvertor.convert()
+
+            const cloned = JSON.parse(JSON.stringify(simpleOpenAPI))
+            let valid = await validator.validateInner(cloned, {})
+            expect(valid).to.be.true
+            Object.assign(cloned, {components})
+            expect(cloned).to.have.property('components')
+            expect(cloned.components).to.have.property('schemas')
+            expect(cloned.components.schemas).to.have.property('main')
+            expect(cloned.components.schemas.main).to.have.property('properties')
+            expect(cloned.components.schemas.main.properties).to.have.property('errors')
+            expect(cloned.components.schemas.main.properties.errors).to.not.have.property('const')
+            expect(cloned.components.schemas.main.properties.errors).to.have.property('enum')
             valid = await validator.validateInner(cloned, {})
                 .catch(err => {
                     console.log(err)
