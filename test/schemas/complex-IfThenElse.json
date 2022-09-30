@@ -1,0 +1,103 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "JSON API Schema",
+    "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
+    "type": "object",
+    "required": [
+        "runtime"
+    ],
+    "properties": {
+        "runtime": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["image", "host"]
+              }
+            },
+            "required": ["type"],
+            "if": {
+              "properties": {
+                "type": {
+                  "enum": ["image"]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "type": {
+                  "enum": ["image"]
+                },
+                "image": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "auto": {
+                      "type": "object",
+                      "required": ["language", "versions"],
+                      "properties": {
+                        "language": {
+                          "type": "string"
+                        },
+                        "versions": {
+                          "type": "array",
+                          "items": {
+                            "type": ["string", "number"]
+                          }
+                        }
+                      }
+                    },
+                    "custom": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["name", "tag"],
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "tag": {
+                          "type": "string"
+                        },
+                        "options": {
+                          "type": "string"
+                        },
+                        "registry": {
+                          "type": "string"
+                        },
+                        "sourceRepository": {
+                          "type": "string"
+                        },
+                        "region": {
+                          "type": "string"
+                        },
+                        "autoPull": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  },
+                  "oneOf": [
+                    {
+                      "required": ["auto"]
+                    },
+                    {
+                      "required": ["custom"]
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            "else": {
+              "properties": {
+                "type": {
+                  "enum": ["host"]
+                }
+              },
+              "additionalProperties": false
+            }
+        }
+    }
+}
+
+
