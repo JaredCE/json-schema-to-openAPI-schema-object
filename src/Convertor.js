@@ -10,6 +10,7 @@ class Convertor {
         this.specialProperties = ['allOf', 'anyOf', 'items', 'oneOf', 'not', 'properties', 'additionalProperties',]
         this.ofProperties = ['allOf', 'anyOf', 'oneOf',]
         this.referencedSchemas = {}
+        this.ignoreRefs = []
         this.bannedKeyWords = ['$schema', '$comment', '$id', 'version', 'examples', 'id',]
 
         this.components = {
@@ -32,7 +33,7 @@ class Convertor {
                 const path = properties['$ref'].split('/')
                 const pathEnd = path[path.length-1]
                 const newPath = `#/components/schemas/${pathEnd}`
-                if (Object.keys(this.referencedSchemas).includes(newPath) === false) {
+                if (Object.keys(this.referencedSchemas).includes(newPath) === false && this.ignoreRefs.includes(pathEnd) === false) {
                     Object.assign(this.referencedSchemas, {[newPath]: properties['$ref']})
                     path.shift()
                     const objPath = path.join('.')
@@ -155,6 +156,36 @@ class Convertor {
                 }
             }
 
+            const convertIf = () => {
+                if (schema.if && schema.then) {
+                    const schemaRefName = `if-${uuid()}`
+                    this.ignoreRefs.push(`${schemaRefName}`)
+                    // this.components.schemas[schemaRefName] = schema.if
+                    const ifSchema = JSON.parse(JSON.stringify(schema.if))
+                    Object.assign(this.components.schemas, {[schemaRefName]: ifSchema})
+                    schema.oneOf = [
+                        {
+                            allOf: [
+                                {$ref: `#/components/schemas/${schemaRefName}`},
+                                schema.then
+                            ]
+                        },
+                        {
+                            allOf: [
+                                {
+                                    not: {$ref: `#/components/schemas/${schemaRefName}`}
+                                },
+                                schema.else
+                            ]
+                        }
+                    ];
+                    delete schema.if;
+                    delete schema.then;
+                    delete schema.else;
+                }
+            }
+
+            convertIf()
             convertNull()
             convertConst()
             convertTypeArrays()
@@ -186,11 +217,11 @@ class Convertor {
         }
 
         traverse(this.schema, traversal)
-
         for (const [key, value] of Object.entries(this.referencedSchemas)) {
             const path = value.split('/').slice(1)
             const pathKey = path.pop()
-            delete path.reduce((previous, current) => previous[current], this.schema)[pathKey]
+            if(this.ignoreRefs.includes(pathKey) === false)
+                delete path.reduce((previous, current) => previous[current], this.schema)[pathKey]
         }
 
         const removeDefinitions = (
