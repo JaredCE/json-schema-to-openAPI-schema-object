@@ -26,6 +26,7 @@ const complexAdditionalPropertiesSchema = require('../schemas/complex-additional
 const complexItemsAsArraySchema = require('../schemas/complex-itemsAsArray.json')
 const complexEmbeddedDefinitionsSchema = require('../schemas/complex-embeddedDefinitions.json')
 const complexConstSchema = require('../schemas/complex-constProperty.json')
+const complexIfThenElseSchema = require('../schemas/complex-IfThenElse.json')
 
 const simpleOpenAPI = require('../openAPI/simple')
 
@@ -527,6 +528,31 @@ describe('Convertor', () => {
             expect(cloned.components.schemas.main.properties).to.have.property('errors')
             expect(cloned.components.schemas.main.properties.errors).to.not.have.property('const')
             expect(cloned.components.schemas.main.properties.errors).to.have.property('enum')
+            valid = await validator.validateInner(cloned, {})
+                .catch(err => {
+                    console.log(err)
+                })
+            expect(valid).to.be.true
+        });
+    });
+
+    describe('convert a schema with a property containing a if then else', () => {
+        it('should return a schema valid for OpenAPI v3.0.0', async function() {
+            const complexConvertor = new Convertor(complexIfThenElseSchema)
+            const components = complexConvertor.convert()
+            const cloned = JSON.parse(JSON.stringify(simpleOpenAPI))
+            let valid = await validator.validateInner(cloned, {})
+            expect(valid).to.be.true
+            Object.assign(cloned, {components})
+            expect(cloned).to.have.property('components')
+            expect(cloned.components).to.have.property('schemas')
+            expect(cloned.components.schemas).to.have.property('main')
+            expect(cloned.components.schemas.main).to.have.property('properties')
+            expect(cloned.components.schemas.main.properties).to.have.property('runtime')
+            expect(cloned.components.schemas.main.properties.runtime).to.not.have.property('if')
+            expect(cloned.components.schemas.main.properties.runtime).to.not.have.property('then')
+            expect(cloned.components.schemas.main.properties.runtime).to.not.have.property('else')
+            expect(cloned.components.schemas.main.properties.runtime).to.have.property('oneOf')
             valid = await validator.validateInner(cloned, {})
                 .catch(err => {
                     console.log(err)
