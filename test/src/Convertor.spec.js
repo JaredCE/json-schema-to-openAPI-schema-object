@@ -1,7 +1,7 @@
 'use strict'
 
 const expect = require('chai').expect
-const validator = require('oas-validator');
+const validator = require('oas-validator')
 const fetch = require('node-fetch')
 
 const Convertor = require('../../src/Convertor')
