@@ -1,7 +1,7 @@
 {
   "name": "json-schema-for-openapi",
   "version": "0.3.0",
-  "description": "Converts a regular JSON Schema to a compatible OpenAPI 3 Schema Object, extracting out $ref schemas to their own schema object",
+  "description": "Converts a regular JSON Schema to a compatible OpenAPI 3.0.X Schema Object",
   "keywords": [
     "json",
     "json-schema",
