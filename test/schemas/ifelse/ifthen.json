@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "JSON API Schema",
+    "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
+    "type": "object",
+    "properties": {
+        "street_address": {
+            "type": "string"
+        },
+        "country": {
+            "type": "string",
+            "default": "United States of America",
+            "enum": [
+                "United States of America",
+                "Canada"
+            ]
+        }
+    },
+    "if": {
+        "properties": {
+            "country": {
+                "const": "United States of America"
+            }
+        }
+    },
+    "then": {
+        "properties": {
+            "postal_code": {
+                "pattern": "[0-9]{5}(-[0-9]{4})?"
+            }
+        }
+    }
+}
