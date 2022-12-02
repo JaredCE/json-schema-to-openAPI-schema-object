@@ -38,14 +38,15 @@ which will output:
 
 ```json
 {
-  "schemas": {
-    "main": {
-        "title": "JSON API Schema",
-        "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
-        "type": "object",
-        "properties": {
-            "errors": {
-                "type": "object"
+    "schemas": {
+        "main": {
+            "title": "JSON API Schema",
+            "description": "This is a schema for responses in the JSON API format. For more, see http://jsonapi.org",
+            "type": "object",
+            "properties": {
+                "errors": {
+                    "type": "object"
+                }
             }
         }
     }
