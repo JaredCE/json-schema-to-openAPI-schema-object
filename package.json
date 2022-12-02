@@ -29,7 +29,7 @@
     "mocha": "^10.1.0",
     "node-fetch": "^2.6.7",
     "oas-validator": "^5.0.8",
-    "sinon": "^14.0.2"
+    "sinon": "^15.0.0"
   },
   "dependencies": {
     "json-schema-traverse": "^1.0.0",
