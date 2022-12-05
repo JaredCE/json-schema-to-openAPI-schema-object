@@ -25,9 +25,7 @@ This will convert a schema of:
             "type": "array",
             "items": [
                 {
-                    "example2": {
-                        "type": "string"
-                    }
+                    "type": "string"
                 }
             ]
         }
@@ -44,9 +42,7 @@ To:
         "example": {
             "type": "array",
             "items": {
-                "example2": {
-                    "type": "string"
-                }
+                "type": "string"
             }
         }
     }
