@@ -7,6 +7,26 @@ class Convertor {
     constructor(schema = {}) {
         this.schema = JSON.parse(JSON.stringify(schema))
 
+        this.camelCasedProperties = [
+            'allOf',
+            'oneOf',
+            'anyOf',
+            'additionalProperties',
+            'multipleOf',
+            'exclusiveMaximum',
+            'exclusiveMinimum',
+            'maxLength',
+            'minLength',
+            'maxItems',
+            'minItems',
+            'uniqueItems',
+            'maxProperties',
+            'minProperties',
+            'readOnly',
+            'writeOnly',
+            'externalDocs',
+        ]
+
         this.specialSchemaFields = [
             'type',
             'allOf',
@@ -85,6 +105,7 @@ class Convertor {
         this.convertArrays(schema)
         this.convertIfThenElse(schema)
         this.convertTypeArrays(schema)
+        this.dealWithCamelCase(schema)
         this.convertDependencies(schema)
         this.removeEmptyRequired(schema)
         this.convertNullProperty(schema)
@@ -312,6 +333,21 @@ class Convertor {
         delete schema.if
         delete schema.then
         delete schema.else
+    }
+
+    dealWithCamelCase(schema) {
+        for (const key of Object.keys(schema)) {
+            const camelCasedKey = this.camelCasedProperties.filter(camelCasedKey => {
+                if (key.toLowerCase() === camelCasedKey.toLowerCase()) {
+                    return camelCasedKey
+                }
+            })
+
+            if (camelCasedKey.length && camelCasedKey[0] !== key) {
+                schema[camelCasedKey[0]] = schema[key]
+                delete schema[key]
+            }
+        }
     }
 
     convertDependencies(schema) {

@@ -44,6 +44,8 @@ const dependenciesArray = require('../schemas/dependencies/dependenciesArray.jso
 const dependenciesSchema = require('../schemas/dependencies/dependenciesSchema.json')
 const dependentRequired = require('../schemas/dependencies/dependentRequired.json')
 const dependentSchemas = require('../schemas/dependencies/dependentSchemas.json')
+// camelcased keys
+const camelCased = require('../schemas/camelCasedKey/camelCasedKey.json')
 // External Schemas That I Cannot Currently Convert
 const listOfBannedSchemas = require('../schemas/SchemasThatCannotBeConverted/list.json')
 
@@ -555,6 +557,23 @@ describe('Convertor', () => {
 
                 expect(result.schemas.basic.properties).to.have.property('name')
                 expect(result.schemas.basic.properties).to.have.property('credit_card')
+
+                const cloned = JSON.parse(JSON.stringify(basicOpenAPI))
+                Object.assign(cloned, {components: result})
+                expect(cloned).to.have.property('components')
+                expect(cloned.components).to.have.property('schemas')
+                expect(cloned.components.schemas).to.have.property('basic')
+                let valid = await validator.validateInner(cloned, {})
+                expect(valid).to.be.true
+            });
+        });
+
+        describe('camelCased Keys', () => {
+            it('should convert camelCasedKey correctly', async function() {
+                const newConvertor = new Convertor(camelCased)
+                const result = newConvertor.convert('basic')
+                expect(result.schemas.basic.properties.name).to.not.have.property('oneof')
+                expect(result.schemas.basic.properties.name).to.have.property('oneOf')
 
                 const cloned = JSON.parse(JSON.stringify(basicOpenAPI))
                 Object.assign(cloned, {components: result})
