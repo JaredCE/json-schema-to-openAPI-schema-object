@@ -171,7 +171,7 @@ class Convertor {
                 if (schema.enum) {
                     removeeNum = true
                     const newEnum = []
-                     schema.enum.forEach(enumType => {
+                    schema.enum.forEach(enumType => {
                         if (type === typeof enumType)
                             newEnum.push(enumType)
                     })
