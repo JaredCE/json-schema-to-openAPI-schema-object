@@ -244,9 +244,7 @@ class Convertor {
     convertArrays(schema) {
         if (Array.isArray(schema.items)) {
             const obj = {}
-            for (const item of schema.items) {
-                Object.assign(obj, item)
-            }
+            Object.assign(obj, schema.items[0])
             schema.items = obj
         }
     }

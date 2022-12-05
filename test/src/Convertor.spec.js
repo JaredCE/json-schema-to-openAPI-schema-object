@@ -28,6 +28,7 @@ const defaultNumbers = require('../schemas/defaultValues/defaultNumbers.json')
 const defaultString = require('../schemas/defaultValues/defaultString.json')
 // array items
 const basicArray = require('../schemas/arrayItems/basicArray.json')
+const multiArray = require('../schemas/arrayItems/multipleItemArray.json')
 // const values
 const basicConst = require('../schemas/const/basicConst.json')
 // if/then/else schemas
@@ -322,6 +323,24 @@ describe('Convertor', () => {
                 expect(result.schemas.basic.properties.names.type).to.be.equal('array')
                 expect(result.schemas.basic.properties.names.items).to.be.an('object')
                 expect(result.schemas.basic.properties.names.items).to.not.be.an('array')
+
+                const cloned = JSON.parse(JSON.stringify(basicOpenAPI))
+                Object.assign(cloned, {components: result})
+                expect(cloned).to.have.property('components')
+                expect(cloned.components).to.have.property('schemas')
+                expect(cloned.components.schemas).to.have.property('basic')
+                let valid = await validator.validateInner(cloned, {})
+                expect(valid).to.be.true
+            });
+
+            it('should only use the first item in the array and discard the others', async function() {
+                const newConvertor = new Convertor(multiArray)
+                const result = newConvertor.convert('basic')
+                expect(result.schemas.basic.properties.names).to.have.property('type')
+                expect(result.schemas.basic.properties.names.type).to.be.equal('array')
+                expect(result.schemas.basic.properties.names.items).to.be.an('object')
+                expect(result.schemas.basic.properties.names.items).to.not.be.an('array')
+                expect(result.schemas.basic.properties.names.items.type).to.equal('object')
 
                 const cloned = JSON.parse(JSON.stringify(basicOpenAPI))
                 Object.assign(cloned, {components: result})
