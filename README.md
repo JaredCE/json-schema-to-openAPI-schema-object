@@ -53,6 +53,8 @@ To:
 }
 ```
 
+At the moment, this library cannot handle more than one item in the array, and so will default to using the first item only.
+
 ### Types in an array to OneOf
 
 This will convert a schema of:
@@ -81,6 +83,41 @@ To:
                 },
                 {
                     "type": "number"
+                }
+            ]
+        }
+    }
+}
+```
+
+Where an array contains `null`, it will now set `nullable` against all types:
+
+```json
+{
+    "type": "object",
+    "properties": {
+        "example": {
+            "type": ["string", "number", "null"],
+        }
+    }
+}
+```
+
+To:
+
+```json
+{
+    "type": "object",
+    "properties": {
+        "example": {
+            "oneOf": [
+                {
+                    "type": "string",
+                    "nullable": true
+                },
+                {
+                    "type": "number",
+                    "nullable": true
                 }
             ]
         }
