@@ -27,6 +27,14 @@ class Convertor {
             'externalDocs',
         ]
 
+        this.arrayFields = [
+            'allOf',
+            'oneOf',
+            'anyOf',
+            'enum',
+            'required',
+        ]
+
         this.specialSchemaFields = [
             'type',
             'allOf',
@@ -106,6 +114,7 @@ class Convertor {
         this.convertIfThenElse(schema)
         this.convertTypeArrays(schema)
         this.dealWithCamelCase(schema)
+        this.ensureArrayFields(schema)
         this.convertDependencies(schema)
         this.removeEmptyRequired(schema)
         this.convertNullProperty(schema)
@@ -346,6 +355,20 @@ class Convertor {
             if (camelCasedKey.length && camelCasedKey[0] !== key) {
                 schema[camelCasedKey[0]] = schema[key]
                 delete schema[key]
+            }
+        }
+    }
+
+    ensureArrayFields(schema) {
+        for (const key of Object.keys(schema)) {
+            const arrayField = this.arrayFields.filter(field => {
+                if (key.toLowerCase() === field.toLowerCase()) {
+                    return field
+                }
+            })
+
+            if (arrayField.length && Array.isArray(schema[key]) === false) {
+                schema[arrayField] = [schema[key]]
             }
         }
     }
