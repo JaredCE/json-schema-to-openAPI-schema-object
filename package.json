@@ -1,7 +1,7 @@
 {
   "name": "json-schema-for-openapi",
-  "version": "0.2.1",
-  "description": "Converts a regular JSON Schema to a compatible OpenAPI 3 Schema Object, extracting out $ref schemas to their own schema object",
+  "version": "0.3.0",
+  "description": "Converts a regular JSON Schema to a compatible OpenAPI 3.0.X Schema Object",
   "keywords": [
     "json",
     "json-schema",
@@ -24,11 +24,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@apidevtools/json-schema-ref-parser": "^9.1.0",
     "chai": "^4.3.7",
     "mocha": "^10.1.0",
     "node-fetch": "^2.6.7",
     "oas-validator": "^5.0.8",
-    "sinon": "^14.0.2"
+    "sinon": "^15.0.0"
   },
   "dependencies": {
     "json-schema-traverse": "^1.0.0",
