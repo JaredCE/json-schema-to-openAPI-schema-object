@@ -8,7 +8,7 @@ Converts a standard [JSON Schema](https://json-schema.org/understanding-json-sch
 
 As of version 0.3.0, it is now advised to run a schema through a de-referencer like: https://apitools.dev/json-schema-ref-parser/ to properly deal with `$ref`.  I have removed my own poor implementation of de-referencing JSON schemas since there are libraries that can do it better than I can.
 
-It should be noted, that de-referencing libraries have their own issues and might not be able to properly parse your JSON/output a schema you might expect.  Due to the way OpenAPI v3.0.X Schema Object's are handled, should the referencing not be 100% correct you might face issues using this library and it's output to be used with OpenAPI 3.0.X.
+It should be noted, that de-referencing libraries have their own issues and might not be able to properly parse your JSON/output a schema you might expect.  Due to the way OpenAPI v3.0.X Schema Object's are handled, should the referencing not be 100% correct you might face issues using this library and its output to be used with OpenAPI 3.0.X.
 
 ## Conversions
 
