@@ -50,6 +50,9 @@ const camelCased = require('../schemas/camelCasedKey/camelCasedKey.json')
 const arrayKeyOneOf = require('../schemas/arrayKeys/arrayKeyOneOf.json')
 // External Schemas That I Cannot Currently Convert
 const listOfBannedSchemas = require('../schemas/SchemasThatCannotBeConverted/list.json')
+// anyOf/oneOf Nulls
+const oneOfNull = require('../schemas/ofNulls/oneOfNull.json')
+const anyOfNull = require('../schemas/ofNulls/anyOfNull.json')
 
 // OpenAPI
 const basicOpenAPI = require('../openAPI/basic.json')
@@ -593,6 +596,40 @@ describe('Convertor', () => {
                 const result = newConvertor.convert('basic')
                 expect(result.schemas.basic.properties.name).to.have.property('oneOf')
                 expect(result.schemas.basic.properties.name.oneOf).to.be.an('array')
+
+                const cloned = JSON.parse(JSON.stringify(basicOpenAPI))
+                Object.assign(cloned, {components: result})
+                expect(cloned).to.have.property('components')
+                expect(cloned.components).to.have.property('schemas')
+                expect(cloned.components.schemas).to.have.property('basic')
+                let valid = await validator.validateInner(cloned, {})
+                expect(valid).to.be.true
+            });
+        });
+
+        describe('anyOf and oneOf with an object of type null', () => {
+            it('should convert an anyOf with a type of null', async function() {
+                const newConvertor = new Convertor(anyOfNull)
+                const result = newConvertor.convert('basic')
+                expect(result.schemas.basic.properties.payment).to.have.property('anyOf')
+                expect(result.schemas.basic.properties.payment.anyOf).to.be.an('array')
+                expect(result.schemas.basic.properties.payment.anyOf.length).to.be.equal(1)
+
+                const cloned = JSON.parse(JSON.stringify(basicOpenAPI))
+                Object.assign(cloned, {components: result})
+                expect(cloned).to.have.property('components')
+                expect(cloned.components).to.have.property('schemas')
+                expect(cloned.components.schemas).to.have.property('basic')
+                let valid = await validator.validateInner(cloned, {})
+                expect(valid).to.be.true
+            });
+
+            it('should convert a oneOf with a type of null', async function() {
+                const newConvertor = new Convertor(oneOfNull)
+                const result = newConvertor.convert('basic')
+                expect(result.schemas.basic.properties.payment).to.have.property('oneOf')
+                expect(result.schemas.basic.properties.payment.oneOf).to.be.an('array')
+                expect(result.schemas.basic.properties.payment.oneOf.length).to.be.equal(1)
 
                 const cloned = JSON.parse(JSON.stringify(basicOpenAPI))
                 Object.assign(cloned, {components: result})
