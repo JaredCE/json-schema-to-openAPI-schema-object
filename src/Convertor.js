@@ -311,7 +311,7 @@ class Convertor {
                 Object.assign(this.components, {schemas: {[ifSchemaRefName]: schema.if}})
             }
 
-            if (schema?.then && schema?.else) {
+            if (schema?.then || schema?.else) {
                 let oneOf = []
                 if (schema.then) {
                     oneOf.push({
