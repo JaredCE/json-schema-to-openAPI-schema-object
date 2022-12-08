@@ -119,6 +119,7 @@ class Convertor {
         this.removeEmptyRequired(schema)
         this.convertNullProperty(schema)
         this.convertDefaultValues(schema)
+        this.convertOneOfAnyOfNulls(schema)
         this.removeInvalidFields(schema)
     }
 
@@ -412,6 +413,35 @@ class Convertor {
                 schema.allOf = allOf
             else
                 schema.anyOf = anyOf
+        }
+    }
+
+    convertOneOfAnyOfNulls(schema) {
+        if (schema.oneOf || schema.anyOf) {
+            const isOneOf = Boolean(schema.oneOf)
+            const schemaOf = schema.oneOf || schema.anyOf
+            const hasNullType = schemaOf.some(obj => {
+                if (obj.type === 'null')
+                    return true
+            })
+
+            if (hasNullType) {
+                schemaOf.forEach(obj => {
+                    if (obj.type !== 'null') {
+                        obj.nullable = true
+                    }
+                })
+                const newOf = schemaOf.filter(obj => {
+                    if (obj.type !== 'null')
+                        return obj
+                })
+
+                if (isOneOf) {
+                    schema.oneOf = newOf
+                } else {
+                    schema.anyOf = newOf
+                }
+            }
         }
     }
 }
