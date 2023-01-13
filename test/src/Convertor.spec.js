@@ -53,6 +53,8 @@ const listOfBannedSchemas = require('../schemas/SchemasThatCannotBeConverted/lis
 // anyOf/oneOf Nulls
 const oneOfNull = require('../schemas/ofNulls/oneOfNull.json')
 const anyOfNull = require('../schemas/ofNulls/anyOfNull.json')
+// patternProperties
+const patternProperties = require('../schemas/patternProperties/patternProperties.json')
 
 // OpenAPI
 const basicOpenAPI = require('../openAPI/basic.json')
@@ -91,14 +93,14 @@ describe('Convertor', () => {
             expect(Convertor).to.not.have.a.property('specialSchemaFields')
             expect(convertor).to.have.a.property('specialSchemaFields')
             expect(convertor.specialSchemaFields).to.be.an('Array')
-            expect(convertor.specialSchemaFields.length).to.be.equal(11)
+            expect(convertor.specialSchemaFields.length).to.be.equal(12)
         });
 
         it('should have a property of this.validSchemaFields', function() {
             expect(Convertor).to.not.have.a.property('validSchemaFields')
             expect(convertor).to.have.a.property('validSchemaFields')
             expect(convertor.validSchemaFields).to.be.an('Array')
-            expect(convertor.validSchemaFields.length).to.be.equal(36)
+            expect(convertor.validSchemaFields.length).to.be.equal(37)
         });
 
         it('should have a property of this.components', function() {
@@ -632,6 +634,24 @@ describe('Convertor', () => {
                 expect(valid).to.be.true
             });
         });
+
+        describe('patternProperties', () => {
+            it('should convert patternProperties into an x-patternProperties', async function () {
+                const newConvertor = new Convertor(patternProperties)
+                const result = newConvertor.convert('basic')
+                expect(result.schemas.basic).to.have.property('x-patternProperties')
+                expect(result.schemas.basic['x-patternProperties']).to.have.property('^([0-1]?[0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$')
+
+                const cloned = JSON.parse(JSON.stringify(basicOpenAPI))
+                Object.assign(cloned, {components: result})
+                expect(cloned).to.have.property('components')
+                expect(cloned.components).to.have.property('schemas')
+                expect(cloned.components.schemas).to.have.property('basic')
+                let valid = await validator.validateInner(cloned, {})
+                expect(valid).to.be.true
+            })
+
+        })
 
         xdescribe('use a repo with lots of schemas to find failing ones', () => {
             it('should convert all schemas successfully', async function() {

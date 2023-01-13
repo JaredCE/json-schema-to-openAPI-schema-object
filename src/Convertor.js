@@ -47,6 +47,7 @@ class Convertor {
             'description',
             'format',
             'default',
+            'x-patternProperties'
         ]
 
         let validSchemaFields = [
@@ -120,6 +121,7 @@ class Convertor {
         this.convertNullProperty(schema)
         this.convertDefaultValues(schema)
         this.convertOneOfAnyOfNulls(schema)
+        this.convertPatternProperties(schema)
         this.removeInvalidFields(schema)
     }
 
@@ -442,6 +444,14 @@ class Convertor {
                     schema.anyOf = newOf
                 }
             }
+        }
+    }
+
+    convertPatternProperties(schema) {
+        if (schema?.patternProperties) {
+            schema['x-patternProperties'] = schema['patternProperties'];
+            delete schema['patternProperties'];
+            schema.additionalProperties ??= true;
         }
     }
 }

@@ -1,12 +1,11 @@
 ![Node.js CI](https://github.com/JaredCE/json-schema-to-openAPI-schema-object/actions/workflows/node.js.yml/badge.svg)
 ![version](https://img.shields.io/npm/v/json-schema-for-openapi.svg?style=flat-square)
 
-
 # json-schema-for-openapi
 
 Converts a standard [JSON Schema](https://json-schema.org/understanding-json-schema/index.html) to a compatible [OpenAPI v3.0.X Schema Object](https://spec.openapis.org/oas/v3.0.3#schema-object).
 
-As of version 0.3.0, it is now advised to run a schema through a de-referencer like: https://apitools.dev/json-schema-ref-parser/ to properly deal with `$ref`.  I have removed my own poor implementation of de-referencing JSON schemas since there are libraries that can do it better than I can.
+As of version 0.3.0, it is now advised to run a schema through a de-referencer like: <https://apitools.dev/json-schema-ref-parser/> to properly deal with `$ref`.  I have removed my own poor implementation of de-referencing JSON schemas since there are libraries that can do it better than I can.
 
 It should be noted, that de-referencing libraries have their own issues and might not be able to properly parse your JSON/output a schema you might expect.  Due to the way OpenAPI v3.0.X Schema Object's are handled, should the referencing not be 100% correct you might face issues using this library and its output to be used with OpenAPI 3.0.X.
 
@@ -17,6 +16,7 @@ This attempts to massage the standard JSON Schema to a compatible OpenAPI v3.0.X
 ### Items as an Array to Object
 
 This will convert a schema of:
+
 ```json
 {
     "type": "object",
@@ -191,7 +191,11 @@ This will try to convert `"dependencies":`, `"dependentRequired":` and `"depende
 
 It will try to convert an If/Then/Else schema statement to a valid `"OneOf"` schema.
 
-## Installation and Usage:
+### PatternProperties
+
+It will convert `"patternProperties"` into `"x-patternProperties"`.
+
+## Installation and Usage
 
 Install via npm: `npm install json-schema-for-openapi`.
 
