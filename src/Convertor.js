@@ -119,6 +119,7 @@ class Convertor {
         this.removeEmptyRequired(schema)
         this.convertNullProperty(schema)
         this.convertDefaultValues(schema)
+        this.pullOrphanedPropertiesIntoOneAnyAllOf(schema)
         this.convertOneOfAnyOfNulls(schema)
         this.removeInvalidFields(schema)
     }
@@ -441,6 +442,36 @@ class Convertor {
                 } else {
                     schema.anyOf = newOf
                 }
+            }
+        }
+    }
+
+    pullOrphanedPropertiesIntoOneAnyAllOf(schema) {
+        const properties = ['default']
+
+        const addItem = (intersection, schemaOf) => {
+            for (const property of intersection) {
+                for (const item of schemaOf) {
+                    item[property] = schema[property]
+                }
+            }
+        }
+
+        if (schema.allOf || schema.anyOf || schema.oneOf) {
+            const intersection = Object.keys(schema).filter(property => properties.includes(property))
+
+            if (intersection.length) {
+                if (schema.allOf) {
+                    addItem(intersection, schema.allOf)
+                } else if (schema.oneOf) {
+                    addItem(intersection, schema.oneOf)
+                } else {
+                    addItem(intersection, schema.anyOf)
+                }
+            }
+
+            for (const property of intersection) {
+                delete schema[property]
             }
         }
     }
