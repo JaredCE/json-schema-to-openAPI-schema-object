@@ -53,6 +53,11 @@ const listOfBannedSchemas = require('../schemas/SchemasThatCannotBeConverted/lis
 // anyOf/oneOf Nulls
 const oneOfNull = require('../schemas/ofNulls/oneOfNull.json')
 const anyOfNull = require('../schemas/ofNulls/anyOfNull.json')
+// anyOf/oneOf Nulls
+const allOfProperties = require('../schemas/propertiesOutsideOf/allOf.json')
+const oneOfProperties = require('../schemas/propertiesOutsideOf/oneOf.json')
+const anyOfProperties = require('../schemas/propertiesOutsideOf/anyOf.json')
+
 
 // OpenAPI
 const basicOpenAPI = require('../openAPI/basic.json')
@@ -622,6 +627,67 @@ describe('Convertor', () => {
                 expect(result.schemas.basic.properties.payment).to.have.property('oneOf')
                 expect(result.schemas.basic.properties.payment.oneOf).to.be.an('array')
                 expect(result.schemas.basic.properties.payment.oneOf.length).to.be.equal(1)
+
+                const cloned = JSON.parse(JSON.stringify(basicOpenAPI))
+                Object.assign(cloned, {components: result})
+                expect(cloned).to.have.property('components')
+                expect(cloned.components).to.have.property('schemas')
+                expect(cloned.components.schemas).to.have.property('basic')
+                let valid = await validator.validateInner(cloned, {})
+                expect(valid).to.be.true
+            });
+        });
+
+        describe(`properties that exist outside of a oneOf|anyOf|allOf`, function () {
+            it(`should put the property outside of an oneOf into the oneOf`, async function() {
+                const newConvertor = new Convertor(oneOfProperties)
+                const result = newConvertor.convert('basic')
+                expect(result.schemas.basic.properties.payment).to.have.property('oneOf')
+                expect(result.schemas.basic.properties.payment.oneOf).to.be.an('array')
+                expect(result.schemas.basic.properties.payment.oneOf.length).to.be.equal(1)
+                expect(result.schemas.basic.properties.payment).to.not.have.property('default')
+                expect(result.schemas.basic.properties.payment.oneOf[0]).to.have.property('default')
+                expect(result.schemas.basic.properties.payment.oneOf[0].default).to.be.equal('one')
+
+                const cloned = JSON.parse(JSON.stringify(basicOpenAPI))
+                Object.assign(cloned, {components: result})
+                expect(cloned).to.have.property('components')
+                expect(cloned.components).to.have.property('schemas')
+                expect(cloned.components.schemas).to.have.property('basic')
+                let valid = await validator.validateInner(cloned, {})
+                expect(valid).to.be.true
+            });
+
+            it(`should put the property outside of an anyOf into the anyOf`, async function() {
+                const newConvertor = new Convertor(anyOfProperties)
+                const result = newConvertor.convert('basic')
+                expect(result.schemas.basic.properties.payment).to.have.property('anyOf')
+                expect(result.schemas.basic.properties.payment.anyOf).to.be.an('array')
+                expect(result.schemas.basic.properties.payment.anyOf.length).to.be.equal(2)
+                expect(result.schemas.basic.properties.payment).to.not.have.property('default')
+                expect(result.schemas.basic.properties.payment.anyOf[0]).to.have.property('default')
+                expect(result.schemas.basic.properties.payment.anyOf[0].default).to.be.equal('one')
+                expect(result.schemas.basic.properties.payment.anyOf[1]).to.have.property('default')
+                expect(result.schemas.basic.properties.payment.anyOf[1].default).to.be.equal(1)
+
+                const cloned = JSON.parse(JSON.stringify(basicOpenAPI))
+                Object.assign(cloned, {components: result})
+                expect(cloned).to.have.property('components')
+                expect(cloned.components).to.have.property('schemas')
+                expect(cloned.components.schemas).to.have.property('basic')
+                let valid = await validator.validateInner(cloned, {})
+                expect(valid).to.be.true
+            });
+
+            it(`should put the property outside of an allOf into the allOf`, async function() {
+                const newConvertor = new Convertor(allOfProperties)
+                const result = newConvertor.convert('basic')
+                expect(result.schemas.basic.properties.payment).to.have.property('allOf')
+                expect(result.schemas.basic.properties.payment.allOf).to.be.an('array')
+                expect(result.schemas.basic.properties.payment.allOf.length).to.be.equal(1)
+                expect(result.schemas.basic.properties.payment).to.not.have.property('default')
+                expect(result.schemas.basic.properties.payment.allOf[0]).to.have.property('default')
+                expect(result.schemas.basic.properties.payment.allOf[0].default).to.be.equal('one')
 
                 const cloned = JSON.parse(JSON.stringify(basicOpenAPI))
                 Object.assign(cloned, {components: result})
