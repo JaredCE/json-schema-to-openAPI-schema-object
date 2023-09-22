@@ -1,0 +1,96 @@
+{
+  "title": "UserResponse",
+  "description": "Response object for user",
+  "type": "object",
+  "properties": {
+    "user": {
+      "$ref": "#/definitions/default_1",
+      "description": "user details"
+    }
+  },
+  "definitions": {
+    "default_1": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "basicInformation": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            }
+          }
+        },
+        "classes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/default_2"
+          }
+        }
+      }
+    },
+    "default_2": {
+      "type": "object",
+      "properties": {
+        "className": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/default_3"
+          }
+        },
+        "id": {
+          "type": "number"
+        },
+        "parentId": {
+          "type": "number"
+        },
+        "subRows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/default_2"
+          }
+        }
+      }
+    },
+    "default_3": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "detailDesc": {
+          "type": "string"
+        },
+        "detailType": {
+          "$ref": "#/definitions/default_4"
+        }
+      }
+    },
+    "default_4": {
+      "type": "object",
+      "properties": {
+        "detailTypeName": {
+          "type": "string"
+        },
+        "detailCode": {
+          "type": "string"
+        },
+        "id": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
