@@ -772,7 +772,7 @@ describe("Convertor", () => {
           result.schemas.basic.properties.payment.oneOf[0].default
         ).to.be.equal("one");
 
-        const cloned = JSON.parse(JSON.stringify(basicOpenAPI));
+        const cloned = cloneDeep(basicOpenAPI);
         Object.assign(cloned, { components: result });
         expect(cloned).to.have.property("components");
         expect(cloned.components).to.have.property("schemas");
@@ -807,7 +807,7 @@ describe("Convertor", () => {
           result.schemas.basic.properties.payment.anyOf[1].default
         ).to.be.equal(1);
 
-        const cloned = JSON.parse(JSON.stringify(basicOpenAPI));
+        const cloned = cloneDeep(basicOpenAPI);
         Object.assign(cloned, { components: result });
         expect(cloned).to.have.property("components");
         expect(cloned.components).to.have.property("schemas");
@@ -836,7 +836,7 @@ describe("Convertor", () => {
           result.schemas.basic.properties.payment.allOf[0].default
         ).to.be.equal("one");
 
-        const cloned = JSON.parse(JSON.stringify(basicOpenAPI));
+        const cloned = cloneDeep(basicOpenAPI);
         Object.assign(cloned, { components: result });
         expect(cloned).to.have.property("components");
         expect(cloned.components).to.have.property("schemas");
@@ -848,12 +848,120 @@ describe("Convertor", () => {
 
     describe(`circular schemas`, function () {
       it(`should convert a circular schema`, async function () {
-        const bundled = await $RefParser.bundle(circular);
-        const dereferenced = await $RefParser.dereference(bundled);
+        const parser = new $RefParser();
+        const bundled = await parser.bundle(circular);
+        const dereferenced = await parser.dereference(bundled);
+
+        const getCircularReplacer = () => {
+          const seen = new WeakSet();
+          return (key, value) => {
+            if (typeof value === "object" && value !== null) {
+              if (seen.has(value)) {
+                return;
+              }
+              seen.add(value);
+            }
+            return value;
+          };
+        };
+
+        // console.log(JSON.stringify(dereferenced, getCircularReplacer()));
+
+        expect(parser.$refs.circular).to.be.true;
+        expect(dereferenced).to.have.property("definitions");
+        expect(
+          dereferenced.properties.user.properties.classes.items.properties
+        ).to.haveOwnProperty("subRows");
+        expect(
+          dereferenced.properties.user.properties.classes.items.properties
+        ).to.haveOwnProperty("className");
+        expect(
+          dereferenced.properties.user.properties.classes.items.properties
+        ).to.haveOwnProperty("details");
+        expect(
+          dereferenced.properties.user.properties.classes.items.properties
+        ).to.haveOwnProperty("id");
+        expect(
+          dereferenced.properties.user.properties.classes.items.properties
+        ).to.haveOwnProperty("parentId");
+
+        expect(
+          dereferenced.properties.user.properties.classes.items.properties
+            .subRows.type
+        ).to.be.equal("array");
+        expect(
+          dereferenced.properties.user.properties.classes.items.properties
+            .subRows.items.properties
+        ).to.haveOwnProperty("subRows");
+        expect(
+          dereferenced.properties.user.properties.classes.items.properties
+            .subRows.items.properties
+        ).to.haveOwnProperty("className");
+        expect(
+          dereferenced.properties.user.properties.classes.items.properties
+            .subRows.items.properties
+        ).to.haveOwnProperty("details");
+        expect(
+          dereferenced.properties.user.properties.classes.items.properties
+            .subRows.items.properties
+        ).to.haveOwnProperty("id");
+        expect(
+          dereferenced.properties.user.properties.classes.items.properties
+            .subRows.items.properties
+        ).to.haveOwnProperty("parentId");
 
         const newConvertor = new Convertor(dereferenced);
-        const result = newConvertor.convert("basic");
-        console.log(result);
+        try {
+          const result = newConvertor.convert("basic");
+
+          expect(result.schemas.basic).to.not.have.property("definitions");
+          expect(
+            result.schemas.basic.properties.user.properties.classes.items
+              .properties
+          ).to.haveOwnProperty("subRows");
+          expect(
+            result.schemas.basic.properties.user.properties.classes.items
+              .properties
+          ).to.haveOwnProperty("className");
+          expect(
+            result.schemas.basic.properties.user.properties.classes.items
+              .properties
+          ).to.haveOwnProperty("details");
+          expect(
+            result.schemas.basic.properties.user.properties.classes.items
+              .properties
+          ).to.haveOwnProperty("id");
+          expect(
+            result.schemas.basic.properties.user.properties.classes.items
+              .properties
+          ).to.haveOwnProperty("parentId");
+
+          expect(
+            result.schemas.basic.properties.user.properties.classes.items
+              .properties.subRows.type
+          ).to.be.equal("array");
+
+          expect(
+            result.schemas.basic.properties.user.properties.classes.items
+              .properties.subRows
+          ).to.have.property("items");
+          expect(
+            result.schemas.basic.properties.user.properties.classes.items
+              .properties.subRows.items
+          ).to.be.deep.equal({});
+
+          // console.log(JSON.stringify(result));
+
+          const cloned = cloneDeep(basicOpenAPI);
+          Object.assign(cloned, { components: result });
+          expect(cloned).to.have.property("components");
+          expect(cloned.components).to.have.property("schemas");
+          expect(cloned.components.schemas).to.have.property("basic");
+          let valid = await validator.validateInner(cloned, {});
+          expect(valid).to.be.true;
+        } catch (err) {
+          expect(err).to.be.undefined;
+        }
       });
     });
 
