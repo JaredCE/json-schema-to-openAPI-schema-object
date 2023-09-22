@@ -5,6 +5,7 @@ const validator = require("oas-validator");
 // for external schema validation tests
 const fetch = require("node-fetch");
 const $RefParser = require("@apidevtools/json-schema-ref-parser");
+const cloneDeep = require("lodash.clonedeep");
 
 const Convertor = require("../../src/Convertor");
 
