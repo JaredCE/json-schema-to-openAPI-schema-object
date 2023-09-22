@@ -509,7 +509,7 @@ class Convertor {
   }
 
   isCyclic(x, bReturnReport) {
-    var a_sKeys = [],
+    let a_sKeys = [],
       a_oStack = [],
       wm_oSeenObjects = new WeakMap(), //# see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
       oReturnVal = {
@@ -518,7 +518,7 @@ class Convertor {
       };
     //# Setup the recursive logic to locate any circular references while kicking off the initial call
     (function doIsCyclic(oTarget, sKey) {
-      var a_sTargetKeys, sCurrentKey, i;
+      let a_sTargetKeys, sCurrentKey, i;
 
       //# If we've seen this oTarget before, flip our .found to true
       if (wm_oSeenObjects.has(oTarget)) {
