@@ -8,6 +8,7 @@ const $RefParser = require("@apidevtools/json-schema-ref-parser");
 const cloneDeep = require("lodash.clonedeep");
 
 const Convertor = require("../../src/Convertor");
+const packageData = require("../../package.json");
 
 // JSON Schemas
 // basic
@@ -949,7 +950,9 @@ describe("Convertor", () => {
           expect(
             result.schemas.basic.properties.user.properties.classes.items
               .properties.subRows.items
-          ).to.be.deep.equal({});
+          ).to.be.deep.equal({
+            description: `This was found to be a circular reference and has been closed off to avoid repetitive processing.  This closure was made by json-schema-for-openapi v${packageData.version} - please open an issue at: ${packageData.bugs}`,
+          });
 
           // console.log(JSON.stringify(result));
 
