@@ -3,6 +3,7 @@
 const traverse = require("json-schema-traverse");
 const { v4: uuid } = require("uuid");
 const cloneDeep = require("lodash.clonedeep");
+const packageData = require("../package.json");
 
 class Convertor {
   constructor(schema = {}) {
@@ -112,7 +113,9 @@ class Convertor {
 
     for (const reportDetail of report) {
       try {
-        this.closingTheCircle(this.schema, reportDetail.duplicate, {});
+        this.closingTheCircle(this.schema, reportDetail.duplicate, {
+          description: `This was found to be a circular reference and has been closed off to avoid repetitive processing.  This closure was made by json-schema-for-openapi v${packageData.version} - please open an issue at: ${packageData.bugs}`,
+        });
       } catch (err) {
         console.error(err);
         throw err;
