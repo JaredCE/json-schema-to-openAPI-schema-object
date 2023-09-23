@@ -951,7 +951,7 @@ describe("Convertor", () => {
             result.schemas.basic.properties.user.properties.classes.items
               .properties.subRows.items
           ).to.be.deep.equal({
-            description: `This was found to be a circular reference and has been closed off to avoid repetitive processing.  This closure was made by json-schema-for-openapi v${packageData.version} - please open an issue at: ${packageData.bugs}`,
+            description: `This was found to be a circular reference and has been closed off to avoid repetitive processing.  This closure was made by json-schema-for-openapi v${packageData.version} - please open an issue at: ${packageData.bugs.url}`,
           });
 
           // console.log(JSON.stringify(result));
