@@ -114,7 +114,7 @@ class Convertor {
     for (const reportDetail of report) {
       try {
         this.closingTheCircle(this.schema, reportDetail.duplicate, {
-          description: `This was found to be a circular reference and has been closed off to avoid repetitive processing.  This closure was made by json-schema-for-openapi v${packageData.version} - please open an issue at: ${packageData.bugs}`,
+          description: `This was found to be a circular reference and has been closed off to avoid repetitive processing.  This closure was made by json-schema-for-openapi v${packageData.version} - please open an issue at: ${packageData.bugs.url}`,
         });
       } catch (err) {
         console.error(err);
