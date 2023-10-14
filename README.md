@@ -2,8 +2,8 @@
   <a href="https://www.npmjs.com/package/json-schema-for-openapi">
     <img src="https://img.shields.io/npm/v/json-schema-for-openapi.svg?style=flat-square">
   </a>
-  <a href="https://github.com/JaredCE/json-schema-to-openAPI-schema-object/actions/workflows/node.yml">
-    <img src="https://github.com/JaredCE/json-schema-to-openAPI-schema-object/actions/workflows/node.yml/badge.svg">
+  <a href="https://github.com/JaredCE/json-schema-to-openAPI-schema-object/actions/workflows/node.js.yml">
+    <img src="https://github.com/JaredCE/json-schema-to-openAPI-schema-object/actions/workflows/node.js.yml/badge.svg">
   </a>
 </p>
 
