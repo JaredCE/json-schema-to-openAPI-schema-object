@@ -110,12 +110,26 @@ class Convertor {
 
   closeCircularReferences() {
     const report = this.isCyclic(this.schema, true);
-
+    let seenSchemas = new WeakMap();
+    let i = 0;
     for (const reportDetail of report) {
       try {
-        this.closingTheCircle(this.schema, reportDetail.duplicate, {
-          description: `This was found to be a circular reference and has been closed off to avoid repetitive processing.  This closure was made by json-schema-for-openapi v${packageData.version} - please open an issue at: ${packageData.bugs.url}`,
-        });
+        const dupeName = `cyclic_${i}`;
+        if (seenSchemas.has(reportDetail.instance)) {
+          const value = {
+            $ref: `#/components/schemas/${seenSchemas.get(
+              reportDetail.instance
+            )}`,
+          };
+
+          this.closingTheCircle(this.schema, reportDetail.duplicate, value);
+        } else {
+          seenSchemas.set(reportDetail.instance, dupeName);
+          this.addToComponents(dupeName, reportDetail.instance);
+          const value = { $ref: `#/components/schemas/${dupeName}` };
+          this.closingTheCircle(this.schema, reportDetail.duplicate, value);
+        }
+        i++;
       } catch (err) {
         console.error(err);
         throw err;
@@ -330,15 +344,16 @@ class Convertor {
 
       traverse(schema.if, traversal);
 
-      if (this.components.schemas) {
-        Object.assign(this.components.schemas, {
-          [ifSchemaRefName]: schema.if,
-        });
-      } else {
-        Object.assign(this.components, {
-          schemas: { [ifSchemaRefName]: schema.if },
-        });
-      }
+      // if (this.components.schemas) {
+      //   Object.assign(this.components.schemas, {
+      //     [ifSchemaRefName]: schema.if,
+      //   });
+      // } else {
+      //   Object.assign(this.components, {
+      //     schemas: { [ifSchemaRefName]: schema.if },
+      //   });
+      // }
+      this.addToComponents(ifSchemaRefName, schema.if);
 
       if (schema?.then || schema?.else) {
         let oneOf = [];
@@ -578,6 +593,18 @@ class Convertor {
     })(x, ""); //# doIsCyclic
 
     return bReturnReport ? oReturnVal.report : oReturnVal.found;
+  }
+
+  addToComponents(schemaRefName, schema) {
+    if (this.components.schemas) {
+      Object.assign(this.components.schemas, {
+        [schemaRefName]: schema,
+      });
+    } else {
+      Object.assign(this.components, {
+        schemas: { [schemaRefName]: schema },
+      });
+    }
   }
 }
 
