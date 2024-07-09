@@ -17,6 +17,7 @@ const basic = require("../schemas/basic.json");
 const invalidFieldOne = require("../schemas/invalidFields/invalidField.json");
 // null property type
 const nullProperty = require("../schemas/nullProperties/nullProperty.json");
+const nullAndTypeProperty = require("../schemas/nullProperties/nullAndType.json");
 // array types
 const arrayType = require("../schemas/arrayTypes/arrayType.json");
 const arrayTypeWithNull = require("../schemas/arrayTypes/arrayTypeIncludingNull.json");
@@ -178,6 +179,33 @@ describe("Convertor", () => {
         let valid = await validator.validateInner(cloned, {});
         expect(valid).to.be.true;
       });
+
+      it(`should set types as nullable when null is provided along with a type`, async function () {
+        const newConvertor = new Convertor(nullAndTypeProperty);
+        const result = newConvertor.convert("basic");
+
+        expect(result.schemas.basic.properties.typedProperty).to.have.property(
+          "type"
+        );
+        expect(result.schemas.basic.properties.typedProperty).to.have.property(
+          "type",
+          "string"
+        );
+        expect(result.schemas.basic.properties.typedProperty).to.have.property(
+          "nullable"
+        );
+        expect(
+          result.schemas.basic.properties.typedProperty.nullable
+        ).to.be.equal(true);
+
+        const cloned = JSON.parse(JSON.stringify(basicOpenAPI));
+        Object.assign(cloned, { components: result });
+        expect(cloned).to.have.property("components");
+        expect(cloned.components).to.have.property("schemas");
+        expect(cloned.components.schemas).to.have.property("basic");
+        let valid = await validator.validateInner(cloned, {});
+        expect(valid).to.be.true;
+      });
     });
 
     describe("arrays of types", () => {
@@ -196,37 +224,6 @@ describe("Convertor", () => {
         expect(
           result.schemas.basic.properties.arrayTypeProperty.oneOf.length
         ).to.be.equal(2);
-
-        const cloned = JSON.parse(JSON.stringify(basicOpenAPI));
-        Object.assign(cloned, { components: result });
-        expect(cloned).to.have.property("components");
-        expect(cloned.components).to.have.property("schemas");
-        expect(cloned.components.schemas).to.have.property("basic");
-        let valid = await validator.validateInner(cloned, {});
-        expect(valid).to.be.true;
-      });
-
-      it("should convert properties that have an array of types to a oneOf with null fields", async function () {
-        const newConvertor = new Convertor(arrayTypeWithNull);
-        const result = newConvertor.convert("basic");
-        expect(
-          result.schemas.basic.properties.arrayTypeProperty
-        ).to.not.have.property("type");
-        expect(
-          result.schemas.basic.properties.arrayTypeProperty
-        ).to.have.property("oneOf");
-        expect(
-          result.schemas.basic.properties.arrayTypeProperty.oneOf
-        ).to.be.an("array");
-        expect(
-          result.schemas.basic.properties.arrayTypeProperty.oneOf.length
-        ).to.be.equal(1);
-        expect(
-          result.schemas.basic.properties.arrayTypeProperty.oneOf[0].type
-        ).to.be.equal("string");
-        expect(
-          result.schemas.basic.properties.arrayTypeProperty.oneOf[0].nullable
-        ).to.be.equal(true);
 
         const cloned = JSON.parse(JSON.stringify(basicOpenAPI));
         Object.assign(cloned, { components: result });
