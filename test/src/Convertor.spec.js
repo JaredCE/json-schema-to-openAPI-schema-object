@@ -56,6 +56,8 @@ const listOfBannedSchemas = require("../schemas/SchemasThatCannotBeConverted/lis
 // anyOf/oneOf Nulls
 const oneOfNull = require("../schemas/ofNulls/oneOfNull.json");
 const anyOfNull = require("../schemas/ofNulls/anyOfNull.json");
+const moreThanoneOfNull = require("../schemas/ofNulls/moreThanOneoneOf.json");
+const moreThananyOfNull = require("../schemas/ofNulls/moreThanOneanyOf.json");
 // anyOf/oneOf Nulls
 const allOfProperties = require("../schemas/propertiesOutsideOf/allOf.json");
 const oneOfProperties = require("../schemas/propertiesOutsideOf/oneOf.json");
@@ -712,13 +714,18 @@ describe("Convertor", () => {
       it("should convert an anyOf with a type of null", async function () {
         const newConvertor = new Convertor(anyOfNull);
         const result = newConvertor.convert("basic");
-        expect(result.schemas.basic.properties.payment).to.have.property(
+
+        expect(result.schemas.basic.properties.payment).to.not.have.property(
           "anyOf"
         );
-        expect(result.schemas.basic.properties.payment.anyOf).to.be.an("array");
-        expect(
-          result.schemas.basic.properties.payment.anyOf.length
-        ).to.be.equal(1);
+        expect(result.schemas.basic.properties.payment).to.have.property(
+          "type",
+          "string"
+        );
+        expect(result.schemas.basic.properties.payment).to.have.property(
+          "nullable",
+          true
+        );
 
         const cloned = JSON.parse(JSON.stringify(basicOpenAPI));
         Object.assign(cloned, { components: result });
@@ -732,13 +739,78 @@ describe("Convertor", () => {
       it("should convert a oneOf with a type of null", async function () {
         const newConvertor = new Convertor(oneOfNull);
         const result = newConvertor.convert("basic");
+        expect(result.schemas.basic.properties.payment).to.not.have.property(
+          "oneOf"
+        );
+        expect(result.schemas.basic.properties.payment).to.have.property(
+          "type",
+          "string"
+        );
+        expect(result.schemas.basic.properties.payment).to.have.property(
+          "nullable",
+          true
+        );
+
+        const cloned = JSON.parse(JSON.stringify(basicOpenAPI));
+        Object.assign(cloned, { components: result });
+        expect(cloned).to.have.property("components");
+        expect(cloned.components).to.have.property("schemas");
+        expect(cloned.components.schemas).to.have.property("basic");
+        let valid = await validator.validateInner(cloned, {});
+        expect(valid).to.be.true;
+      });
+
+      it("should convert an anyOf with a type of null and more than one non null type", async function () {
+        const newConvertor = new Convertor(moreThananyOfNull);
+        const result = newConvertor.convert("basic");
+
+        expect(result.schemas.basic.properties.payment).to.have.property(
+          "anyOf"
+        );
+        expect(result.schemas.basic.properties.payment.anyOf).to.have.lengthOf(
+          2
+        );
+        const stringAnyOf =
+          result.schemas.basic.properties.payment.anyOf.filter(
+            (schema) => schema.type === "string"
+          );
+        expect(stringAnyOf[0]).to.have.property("nullable", true);
+
+        const integerAnyOf =
+          result.schemas.basic.properties.payment.anyOf.filter(
+            (schema) => schema.type === "integer"
+          );
+        expect(integerAnyOf[0]).to.have.property("nullable", true);
+
+        const cloned = JSON.parse(JSON.stringify(basicOpenAPI));
+        Object.assign(cloned, { components: result });
+        expect(cloned).to.have.property("components");
+        expect(cloned.components).to.have.property("schemas");
+        expect(cloned.components.schemas).to.have.property("basic");
+        let valid = await validator.validateInner(cloned, {});
+        expect(valid).to.be.true;
+      });
+
+      it("should convert a oneOf with a type of null and more than one non null type", async function () {
+        const newConvertor = new Convertor(moreThanoneOfNull);
+        const result = newConvertor.convert("basic");
         expect(result.schemas.basic.properties.payment).to.have.property(
           "oneOf"
         );
-        expect(result.schemas.basic.properties.payment.oneOf).to.be.an("array");
-        expect(
-          result.schemas.basic.properties.payment.oneOf.length
-        ).to.be.equal(1);
+        expect(result.schemas.basic.properties.payment.oneOf).to.have.lengthOf(
+          2
+        );
+        const stringOneOf =
+          result.schemas.basic.properties.payment.oneOf.filter(
+            (schema) => schema.type === "string"
+          );
+        expect(stringOneOf[0]).to.have.property("nullable", true);
+
+        const booleanOneOf =
+          result.schemas.basic.properties.payment.oneOf.filter(
+            (schema) => schema.type === "boolean"
+          );
+        expect(booleanOneOf[0]).to.have.property("nullable", true);
 
         const cloned = JSON.parse(JSON.stringify(basicOpenAPI));
         Object.assign(cloned, { components: result });
