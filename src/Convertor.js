@@ -186,6 +186,7 @@ class Convertor {
       let defaultValue;
       let types = schema.type;
       let removeeNum = false;
+
       const nullable = types.includes("null");
       if (nullable === true) {
         types = types.filter((type) => {
@@ -245,9 +246,13 @@ class Convertor {
         oneOf.push(newTypeObj);
       }
 
-      schema.oneOf = oneOf;
-      if (removeeNum) delete schema.enum;
-      delete schema.type;
+      if (oneOf.length > 1) {
+        schema.oneOf = oneOf;
+        delete schema.type;
+        if (removeeNum) delete schema.enum;
+      } else {
+        Object.assign(schema, oneOf[0]);
+      }
     }
   }
 
