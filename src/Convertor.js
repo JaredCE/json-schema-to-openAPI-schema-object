@@ -186,6 +186,7 @@ class Convertor {
       let defaultValue;
       let types = schema.type;
       let removeeNum = false;
+
       const nullable = types.includes("null");
       if (nullable === true) {
         types = types.filter((type) => {
@@ -245,9 +246,13 @@ class Convertor {
         oneOf.push(newTypeObj);
       }
 
-      schema.oneOf = oneOf;
-      if (removeeNum) delete schema.enum;
-      delete schema.type;
+      if (oneOf.length > 1) {
+        schema.oneOf = oneOf;
+        delete schema.type;
+        if (removeeNum) delete schema.enum;
+      } else {
+        Object.assign(schema, oneOf[0]);
+      }
     }
   }
 
@@ -476,19 +481,25 @@ class Convertor {
       });
 
       if (hasNullType) {
-        schemaOf.forEach((obj) => {
-          if (obj.type !== "null") {
-            obj.nullable = true;
-          }
-        });
-        const newOf = schemaOf.filter((obj) => {
-          if (obj.type !== "null") return obj;
-        });
+        const nullableSchemasFiltered = schemaOf
+          .filter((schemaContainignNull) => {
+            if (schemaContainignNull.type !== "null") {
+              return schemaContainignNull;
+            }
+          })
+          .map((schemasNotContainingNull) => {
+            schemasNotContainingNull.nullable = true;
+            return schemasNotContainingNull;
+          });
 
-        if (isOneOf) {
-          schema.oneOf = newOf;
+        if (nullableSchemasFiltered.length > 1) {
+          if (isOneOf) schema.oneOf = nullableSchemasFiltered;
+          else schema.anyOf = nullableSchemasFiltered;
         } else {
-          schema.anyOf = newOf;
+          if (isOneOf) delete schema.oneOf;
+          else delete schema.anyOf;
+
+          Object.assign(schema, nullableSchemasFiltered[0]);
         }
       }
     }
