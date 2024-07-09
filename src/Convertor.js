@@ -481,19 +481,25 @@ class Convertor {
       });
 
       if (hasNullType) {
-        schemaOf.forEach((obj) => {
-          if (obj.type !== "null") {
-            obj.nullable = true;
-          }
-        });
-        const newOf = schemaOf.filter((obj) => {
-          if (obj.type !== "null") return obj;
-        });
+        const nullableSchemasFiltered = schemaOf
+          .filter((schemaContainignNull) => {
+            if (schemaContainignNull.type !== "null") {
+              return schemaContainignNull;
+            }
+          })
+          .map((schemasNotContainingNull) => {
+            schemasNotContainingNull.nullable = true;
+            return schemasNotContainingNull;
+          });
 
-        if (isOneOf) {
-          schema.oneOf = newOf;
+        if (nullableSchemasFiltered.length > 1) {
+          if (isOneOf) schema.oneOf = nullableSchemasFiltered;
+          else schema.anyOf = nullableSchemasFiltered;
         } else {
-          schema.anyOf = newOf;
+          if (isOneOf) delete schema.oneOf;
+          else delete schema.anyOf;
+
+          Object.assign(schema, nullableSchemasFiltered[0]);
         }
       }
     }
