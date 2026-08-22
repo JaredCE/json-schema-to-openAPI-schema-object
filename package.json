@@ -26,7 +26,7 @@
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.1.0",
     "chai": "^4.3.10",
-    "mocha": "^10.2.0",
+    "mocha": "^11.8.0",
     "node-fetch": "^2.6.7",
     "oas-validator": "^5.0.8",
     "sinon": "^22.1.0"
